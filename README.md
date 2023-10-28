@@ -20,14 +20,14 @@ There are two ways to run the application :  using `mvn spring-boot:run` or by r
 
 Vaadin web applications are full-stack and include both client-side and server-side code in the same project.
 
-| Directory | Description |
-| :--- | :--- |
-| `frontend/` | Client-side source directory |
-| &nbsp;&nbsp;&nbsp;&nbsp;`index.html` | HTML template |
-| &nbsp;&nbsp;&nbsp;&nbsp;`index.ts` | Frontend entrypoint |
-| &nbsp;&nbsp;&nbsp;&nbsp;`main-layout.ts` | Main layout Web Component (optional) |
-| &nbsp;&nbsp;&nbsp;&nbsp;`views/` | UI views Web Components (TypeScript / HTML) |
-| &nbsp;&nbsp;&nbsp;&nbsp;`styles/` | Styles directory (CSS) |
-| `src/main/java/<groupId>/` | Server-side source directory |
-| &nbsp;&nbsp;&nbsp;&nbsp;`Application.java` | Server entrypoint |
-| &nbsp;&nbsp;&nbsp;&nbsp;`AppShell.java` | application-shell configuration |
+| Directory                                  | Description                                 |
+|:-------------------------------------------|:--------------------------------------------|
+| `frontend/`                                | Client-side source directory                |
+| &nbsp;&nbsp;&nbsp;&nbsp;`index.html`       | HTML template                               |
+| &nbsp;&nbsp;&nbsp;&nbsp;`index.ts`         | Frontend entrypoint                         |
+| &nbsp;&nbsp;&nbsp;&nbsp;`main-layout.ts`   | Main layout Web Component (optional)        |
+| &nbsp;&nbsp;&nbsp;&nbsp;`views/`           | UI views Web Components (TypeScript / HTML) |
+| &nbsp;&nbsp;&nbsp;&nbsp;`styles/`          | Styles directory (CSS)                      |
+| `src/main/java/<groupId>/`                 | Server-side source directory                |
+| &nbsp;&nbsp;&nbsp;&nbsp;`Application.java` | Server entrypoint                           |
+| &nbsp;&nbsp;&nbsp;&nbsp;`AppShell.java`    | application-shell configuration             |
