@@ -16,6 +16,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor
 
+/**
+ * Card component representing a project with an extension function that allows extensibility
+ * @param title card title. Default value - "Title"
+ * @param description card description. Default value - "Description"
+ */
 class Card(title: String = "Title", description: String = "Description") : KComposite() {
 
     private val root = ui {
