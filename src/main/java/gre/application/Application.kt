@@ -14,8 +14,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
  *
  */
 @SpringBootApplication
-@PWA(name = "Project Base for Vaadin with Spring", shortName = "Project Base")
-@Theme("my-theme")
+@PWA(name = "Project Management System", shortName = "PMS")
+@Theme(value = "theme")
 open class Application : AppShellConfigurator
 
 fun main(args: Array<String>) {
