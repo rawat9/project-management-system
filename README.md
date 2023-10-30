@@ -31,3 +31,7 @@ Vaadin web applications are full-stack and include both client-side and server-s
 | `src/main/java/<groupId>/`                 | Server-side source directory                |
 | &nbsp;&nbsp;&nbsp;&nbsp;`Application.java` | Server entrypoint                           |
 | &nbsp;&nbsp;&nbsp;&nbsp;`AppShell.java`    | application-shell configuration             |
+
+## ERD
+
+- [Entity Relationship Diagram]("https://drawsql.app/teams/none-388/diagrams/pms/embed")
