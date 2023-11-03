@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired
  * @param service The message service. Automatically injected Spring managed
  * bean.
  */
-@Route
 class MainView(@Autowired service: GreetService) : KComposite() {
     /**
      * Construct a new Vaadin view.
