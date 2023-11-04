@@ -3,13 +3,17 @@ package gre.application.views.projects
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
 import com.vaadin.flow.theme.lumo.LumoUtility.*
+import gre.application.services.ProjectService
+import org.springframework.beans.factory.annotation.Autowired
 
+@PageTitle("Projects")
 @RouteAlias("")
 @Route("projects")
-class Projects : KComposite() {
+class Projects(@Autowired projectService: ProjectService) : KComposite() {
 
     init {
         ui {
@@ -44,7 +48,7 @@ class Projects : KComposite() {
                     button {
                         text = "New Project"
                         icon = VaadinIcon.PLUS.create()
-                        addClickListener { _ -> dialog.openDialog() }
+                        onLeftClick { _ -> dialog.openDialog() }
                     }
                 }
 
@@ -53,12 +57,9 @@ class Projects : KComposite() {
                         Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE
                     )
 
-                    projectCard(title = "Test project")
-                    projectCard(
-                        title = "Flashcard",
-                        description = "This product is targeting students from college and universities"
-                    )
-                    projectCard(title = "Kotlin 1815 Coursework")
+                    projectService.getAll().forEach {
+                        projectCard(title = it.projectName)
+                    }
                 }
             }
         }
