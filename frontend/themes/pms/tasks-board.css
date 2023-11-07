@@ -1,0 +1,38 @@
+.column {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    overflow-y: scroll;
+    background-color: rgb(246, 248, 250);
+    border-radius: var(--lumo-space-s);
+}
+
+.task-card {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    background-color: white;
+    padding: var(--lumo-space-s);
+    margin: var(--lumo-space-xs);
+    border-radius: var(--lumo-space-xs);
+    box-shadow: var(--lumo-box-shadow-xs);
+    cursor: pointer;
+}
+
+.ignore-elements {
+    font-style: italic;
+    opacity: 80%;
+}
+
+.task-sortable-ghost {
+    opacity: 70%;
+}
+
+.task-sortable-chosen {
+    background-color: rgba(231, 224, 224, 0.93);
+}
+
+.task-sortable-drag {
+    background-color: rgb(128, 128, 128);
+    opacity: 50%;
+}
