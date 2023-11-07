@@ -4,6 +4,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.Badge
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.router.BeforeEnterEvent
@@ -66,6 +67,11 @@ class Tasks : KComposite(), BeforeEnterObserver {
 								TextColor.SECONDARY
 							)
 						}
+					}
+					
+					button {
+						text = "New Task"
+						icon = VaadinIcon.PLUS.create()
 					}
 				}
 				
