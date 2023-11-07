@@ -1,10 +1,6 @@
 package gre.application.views.projects
 
-import com.github.mvysny.karibudsl.v10.KComposite
-import com.github.mvysny.karibudsl.v10.formLayout
-import com.github.mvysny.karibudsl.v10.init
-import com.github.mvysny.karibudsl.v10.textArea
-import com.github.mvysny.karibudsl.v10.textField
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasComponents
 
 class CreateProjectForm : KComposite() {
@@ -26,10 +22,9 @@ class CreateProjectForm : KComposite() {
     }
 }
 
-fun HasComponents.taskForm(
+fun HasComponents.createProjectForm(
     block: CreateProjectForm.() -> Unit = {},
 ): CreateProjectForm = init(
     CreateProjectForm(),
     block,
 )
-
