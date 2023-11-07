@@ -18,6 +18,7 @@ open class ProjectService : Dao<Project> {
             Project(
                 projectId = it[ProjectEntity.id].value,
                 projectName = it[ProjectEntity.projectName],
+                projectDescription = it[ProjectEntity.projectDescription]
             )
         }
     }
@@ -37,6 +38,7 @@ open class ProjectService : Dao<Project> {
             Project(
                 projectId = it[ProjectEntity.id].value,
                 projectName = it[ProjectEntity.projectName],
+                projectDescription = it[ProjectEntity.projectDescription]
             )
         }
     }
