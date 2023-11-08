@@ -23,7 +23,7 @@ class ProjectService(private val projectRepository: ProjectRepository) {
 		return projectRepository.delete(id)
 	}
 	
-	fun save(id: Int, entity: Project) {
+	fun update(id: Int, entity: Project) {
 		return projectRepository.update(id, entity)
 	}
 }
