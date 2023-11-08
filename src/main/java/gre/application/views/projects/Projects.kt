@@ -60,7 +60,11 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 					)
 					
 					projectService.getAll().forEach {
-						projectCard(title = it.projectName, description = it.projectDescription.orEmpty())
+						projectCard(
+							id = it.projectId,
+							title = it.projectName,
+							description = it.projectDescription.orEmpty()
+						)
 					}
 				}
 			}
