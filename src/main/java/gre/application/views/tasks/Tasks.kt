@@ -2,6 +2,7 @@ package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.Badge
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.icon.VaadinIcon
@@ -23,17 +24,17 @@ class Tasks : KComposite(), BeforeEnterObserver {
 	
 	private var projectName = ""
 	
-	private lateinit var projectTitle: H2;
+	private lateinit var projectTitle: H2
 	
 	init {
 		val sortableConfig = SortableConfig()
-		sortableConfig.setGroupName("tasks");
-		sortableConfig.allowDragIn(true);
-		sortableConfig.allowDragOut(true);
-		sortableConfig.animation = 150;
-		sortableConfig.chosenClass = "task-sortable-chosen";
-		sortableConfig.dragClass = "task-sortable-drag";
-		sortableConfig.ghostClass = "task-sortable-ghost";
+		sortableConfig.setGroupName("tasks")
+		sortableConfig.allowDragIn(true)
+		sortableConfig.allowDragOut(true)
+		sortableConfig.animation = 150
+		sortableConfig.chosenClass = "task-sortable-chosen"
+		sortableConfig.dragClass = "task-sortable-drag"
+		sortableConfig.ghostClass = "task-sortable-ghost"
 		
 		val groupStore = SortableGroupStore()
 		
@@ -72,6 +73,16 @@ class Tasks : KComposite(), BeforeEnterObserver {
 					button {
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
+						addThemeVariants(ButtonVariant.LUMO_SMALL)
+					}
+					
+					button {
+						text = "View as graph"
+						icon = VaadinIcon.CLUSTER.create()
+						addThemeVariants(
+							ButtonVariant.LUMO_CONTRAST,
+							ButtonVariant.LUMO_SMALL
+						)
 					}
 				}
 				
