@@ -1,7 +1,7 @@
 package gre.application
 
-import gre.application.domain.project.ProjectEntity
-import gre.application.domain.task.TaskEntity
+import gre.application.entities.project.ProjectEntity
+import gre.application.entities.task.TaskEntity
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner

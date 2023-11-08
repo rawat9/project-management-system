@@ -2,8 +2,10 @@ package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.Badge
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
+import com.vaadin.flow.component.html.Paragraph
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
@@ -13,27 +15,31 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import com.vaadin.flow.theme.lumo.LumoUtility.Grid.Column
+import gre.application.services.ProjectService
+import org.springframework.beans.factory.annotation.Autowired
 import org.vaadin.jchristophe.SortableConfig
 import org.vaadin.jchristophe.SortableGroupStore
 import org.vaadin.jchristophe.SortableLayout
 
 @PageTitle("Tasks")
-@Route("tasks/:projectName")
-class Tasks : KComposite(), BeforeEnterObserver {
+@Route("tasks/:projectId")
+class Tasks(@Autowired private val projectService: ProjectService) : KComposite(), BeforeEnterObserver {
 	
-	private var projectName = ""
+	private lateinit var projectId: String
 	
-	private lateinit var projectTitle: H2;
+	private lateinit var projectTitle: H2
+	
+	private lateinit var projectDescription: Paragraph
 	
 	init {
 		val sortableConfig = SortableConfig()
-		sortableConfig.setGroupName("tasks");
-		sortableConfig.allowDragIn(true);
-		sortableConfig.allowDragOut(true);
-		sortableConfig.animation = 150;
-		sortableConfig.chosenClass = "task-sortable-chosen";
-		sortableConfig.dragClass = "task-sortable-drag";
-		sortableConfig.ghostClass = "task-sortable-ghost";
+		sortableConfig.setGroupName("tasks")
+		sortableConfig.allowDragIn(true)
+		sortableConfig.allowDragOut(true)
+		sortableConfig.animation = 150
+		sortableConfig.chosenClass = "task-sortable-chosen"
+		sortableConfig.dragClass = "task-sortable-drag"
+		sortableConfig.ghostClass = "task-sortable-ghost"
 		
 		val groupStore = SortableGroupStore()
 		
@@ -59,7 +65,7 @@ class Tasks : KComposite(), BeforeEnterObserver {
 							)
 						}
 						
-						p {
+						projectDescription = p {
 							text("Projects description")
 							addClassNames(
 								Margin.Bottom.XLARGE,
@@ -72,6 +78,16 @@ class Tasks : KComposite(), BeforeEnterObserver {
 					button {
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
+						addThemeVariants(ButtonVariant.LUMO_SMALL)
+					}
+					
+					button {
+						text = "View as graph"
+						icon = VaadinIcon.CLUSTER.create()
+						addThemeVariants(
+							ButtonVariant.LUMO_CONTRAST,
+							ButtonVariant.LUMO_SMALL
+						)
 					}
 				}
 				
@@ -125,8 +141,14 @@ class Tasks : KComposite(), BeforeEnterObserver {
 	}
 	
 	override fun beforeEnter(event: BeforeEnterEvent) {
-		projectName = event.routeParameters.get("projectName").get()
-		projectTitle.text = projectName
+		projectId = event.routeParameters.get("projectId").get()
+		
+		val project = projectService.getById(projectId.toInt())
+		
+		if (project != null) {
+			projectTitle.text = project.projectName
+			projectDescription.text = project.projectDescription
+		}
 	}
 	
 	private fun header(title: String): Div {

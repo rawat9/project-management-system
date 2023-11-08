@@ -1,53 +1,29 @@
 package gre.application.services
 
-import gre.application.domain.Dao
-import gre.application.domain.project.Project
-import gre.application.domain.project.ProjectEntity
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import gre.application.entities.project.Project
+import gre.application.repository.ProjectRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
-open class ProjectService : Dao<Project> {
-
-    override fun getAll(): List<Project> {
-        return ProjectEntity.selectAll().map {
-            Project(
-                projectId = it[ProjectEntity.id].value,
-                projectName = it[ProjectEntity.projectName],
-                projectDescription = it[ProjectEntity.projectDescription]
-            )
-        }
-    }
-
-    override fun create(entity: Project): Int {
-        val id = ProjectEntity.insertAndGetId {
-            it[projectName] = entity.projectName
-        }
-        return id.value
-    }
-
-    /**
-     * Returns a project by a given id or null if project doesn't exist
-     */
-    override fun getById(id: Int): Project? {
-        return ProjectEntity.select { ProjectEntity.id eq id }.firstOrNull()?.let {
-            Project(
-                projectId = it[ProjectEntity.id].value,
-                projectName = it[ProjectEntity.projectName],
-                projectDescription = it[ProjectEntity.projectDescription]
-            )
-        }
-    }
-
-    override fun delete(id: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun save(entity: Project) {
-        TODO("Not yet implemented")
-    }
+class ProjectService(private val projectRepository: ProjectRepository) {
+	
+	fun getAll(): List<Project> {
+		return projectRepository.getAll()
+	}
+	
+	fun create(entity: Project): Int {
+		return projectRepository.create(entity)
+	}
+	
+	fun getById(id: Int): Project? {
+		return projectRepository.getById(id)
+	}
+	
+	fun delete(id: Int) {
+		return projectRepository.delete(id)
+	}
+	
+	fun update(id: Int, entity: Project) {
+		return projectRepository.update(id, entity)
+	}
 }
