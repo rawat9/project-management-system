@@ -11,7 +11,7 @@ import gre.application.entities.project.Project
 
 class CreateFormProjectDialog(handler: (binder: BeanValidationBinder<Project>) -> Unit) : KComposite() {
 	
-	private var binder: BeanValidationBinder<Project> = beanValidationBinder<Project>()
+	private val binder: BeanValidationBinder<Project> = beanValidationBinder<Project>()
 	
 	private val root = ui {
 		dialog {
