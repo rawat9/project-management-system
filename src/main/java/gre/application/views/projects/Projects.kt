@@ -3,17 +3,19 @@ package gre.application.views.projects
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.data.binder.BeanValidationBinder
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouteAlias
 import com.vaadin.flow.theme.lumo.LumoUtility.*
+import gre.application.entities.project.Project
 import gre.application.services.ProjectService
 import org.springframework.beans.factory.annotation.Autowired
 
 @PageTitle("Projects")
 @RouteAlias("")
 @Route("projects")
-class Projects(@Autowired projectService: ProjectService) : KComposite() {
+class Projects(@Autowired private val projectService: ProjectService) : KComposite() {
 	
 	init {
 		ui {
@@ -43,7 +45,7 @@ class Projects(@Autowired projectService: ProjectService) : KComposite() {
 						}
 					}
 					
-					val dialog = createProjectDialog()
+					val dialog = createFormProjectDialog(fun(binder: BeanValidationBinder<Project>) = onClick(binder))
 					
 					button {
 						text = "New Project"
@@ -58,10 +60,19 @@ class Projects(@Autowired projectService: ProjectService) : KComposite() {
 					)
 					
 					projectService.getAll().forEach {
-						projectCard(title = it.projectName, description = it.projectDescription)
+						projectCard(title = it.projectName, description = it.projectDescription.orEmpty())
 					}
 				}
 			}
 		}
+	}
+	
+	private fun onClick(binder: BeanValidationBinder<Project>) {
+		if (binder.validate().isOk) {
+			val project = Project(0, "")
+			binder.writeBean(project)
+			projectService.create(project)
+		}
+//		UI.getCurrent().page.reload()
 	}
 }
