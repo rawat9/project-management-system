@@ -1,10 +1,14 @@
 package gre.application.entities.task
 
-data class Task(
-	val taskId: TaskId,
-	val taskTitle: String,
-	val taskDescription: String
-)
+import java.time.LocalDate
 
-@JvmInline
-value class TaskId(val value: Int)
+data class Task(
+	val taskId: Int,
+	val taskName: String,
+	val taskDescription: String,
+	val projectId: Int,
+	val status: String,
+	val priority: String,
+	val successorId: Int?,
+	val deadline: LocalDate
+)
