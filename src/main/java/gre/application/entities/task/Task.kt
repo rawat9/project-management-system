@@ -2,13 +2,21 @@ package gre.application.entities.task
 
 import java.time.LocalDate
 
+enum class Status {
+	TODO, IN_PROGRESS, DONE
+}
+
+enum class Priority {
+	LOW, MEDIUM, HIGH
+}
+
 data class Task(
-	val taskId: Int,
-	val taskName: String,
-	val taskDescription: String,
-	val projectId: Int,
-	val status: String,
-	val priority: String,
-	val successorId: Int?,
-	val deadline: LocalDate
+	var id: Int,
+	var name: String,
+	var description: String,
+	var projectId: Int,
+	var status: Status,
+	var priority: Priority,
+	var successorId: Int?,
+	var deadline: LocalDate
 )

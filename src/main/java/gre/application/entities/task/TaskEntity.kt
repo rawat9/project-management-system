@@ -9,10 +9,10 @@ import java.time.LocalDate
 
 object TaskEntity : IntIdTable("task") {
 	val projectId: Column<EntityID<Int>> = reference("project_id", ProjectEntity)
-	val taskName: Column<String> = varchar("task_name", 100)
-	val taskDescription: Column<String> = largeText("task_description")
-	val status: Column<String> = varchar("status", 10)
-	val priority: Column<String> = varchar("priority", 10)
+	val name: Column<String> = varchar("name", 100)
+	val description: Column<String> = largeText("description")
+	val status: Column<Status> = enumeration("status")
+	val priority: Column<Priority> = enumeration("priority")
 	val successorId: Column<Int?> = integer("successor_id").nullable()
 	val createdDate: Column<LocalDate> = date("created_date").clientDefault { LocalDate.now() }
 	val deadline: Column<LocalDate> = date("deadline")

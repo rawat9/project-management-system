@@ -61,9 +61,9 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 					
 					projectService.getAll().forEach {
 						projectCard(
-							id = it.projectId,
-							title = it.projectName,
-							description = it.projectDescription.orEmpty()
+							id = it.id,
+							title = it.name,
+							description = it.description.orEmpty()
 						)
 					}
 				}
@@ -77,6 +77,5 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 			binder.writeBean(project)
 			projectService.create(project)
 		}
-//		UI.getCurrent().page.reload()
 	}
 }

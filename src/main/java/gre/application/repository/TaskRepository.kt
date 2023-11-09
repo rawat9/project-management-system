@@ -13,9 +13,9 @@ open class TaskRepository : Repository<Task> {
 	override fun getAll(): List<Task> {
 		return TaskEntity.selectAll().map {
 			Task(
-				taskId = it[TaskEntity.id].value,
-				taskName = it[TaskEntity.taskName],
-				taskDescription = it[TaskEntity.taskDescription],
+				id = it[TaskEntity.id].value,
+				name = it[TaskEntity.name],
+				description = it[TaskEntity.description],
 				projectId = it[TaskEntity.projectId].value,
 				deadline = it[TaskEntity.deadline],
 				status = it[TaskEntity.status],
@@ -28,9 +28,9 @@ open class TaskRepository : Repository<Task> {
 	override fun getById(id: Int): Task? {
 		return TaskEntity.select { TaskEntity.id eq id }.firstOrNull()?.let {
 			Task(
-				taskId = it[TaskEntity.id].value,
-				taskName = it[TaskEntity.taskName],
-				taskDescription = it[TaskEntity.taskDescription],
+				id = it[TaskEntity.id].value,
+				name = it[TaskEntity.name],
+				description = it[TaskEntity.description],
 				projectId = it[TaskEntity.projectId].value,
 				deadline = it[TaskEntity.deadline],
 				status = it[TaskEntity.status],
@@ -46,8 +46,8 @@ open class TaskRepository : Repository<Task> {
 	
 	override fun create(entity: Task): Int {
 		val id = TaskEntity.insertAndGetId {
-			it[taskName] = entity.taskName
-			it[taskDescription] = entity.taskDescription
+			it[name] = entity.name
+			it[description] = entity.description
 			it[projectId] = entity.projectId
 			it[deadline] = entity.deadline
 			it[status] = entity.status
@@ -60,8 +60,8 @@ open class TaskRepository : Repository<Task> {
 	
 	override fun update(id: Int, entity: Task) {
 		TaskEntity.update({ TaskEntity.id eq id }) {
-			it[taskName] = entity.taskName
-			it[taskDescription] = entity.taskDescription
+			it[name] = entity.name
+			it[description] = entity.description
 			it[projectId] = entity.projectId
 			it[deadline] = entity.deadline
 			it[status] = entity.status

@@ -17,9 +17,9 @@ open class ProjectRepository : Repository<Project> {
 	override fun getAll(): List<Project> {
 		return ProjectEntity.selectAll().map {
 			Project(
-				projectId = it[ProjectEntity.id].value,
-				projectName = it[ProjectEntity.projectName],
-				projectDescription = it[ProjectEntity.projectDescription]
+				id = it[ProjectEntity.id].value,
+				name = it[ProjectEntity.name],
+				description = it[ProjectEntity.description]
 			)
 		}
 	}
@@ -29,8 +29,8 @@ open class ProjectRepository : Repository<Project> {
 	 */
 	override fun create(entity: Project): Int {
 		val id = ProjectEntity.insertAndGetId {
-			it[projectName] = entity.projectName
-			it[projectDescription] = entity.projectDescription.orEmpty()
+			it[name] = entity.name
+			it[description] = entity.description.orEmpty()
 		}
 		return id.value
 	}
@@ -41,9 +41,9 @@ open class ProjectRepository : Repository<Project> {
 	override fun getById(id: Int): Project? {
 		return ProjectEntity.select { ProjectEntity.id eq id }.firstOrNull()?.let {
 			Project(
-				projectId = it[ProjectEntity.id].value,
-				projectName = it[ProjectEntity.projectName],
-				projectDescription = it[ProjectEntity.projectDescription]
+				id = it[ProjectEntity.id].value,
+				name = it[ProjectEntity.name],
+				description = it[ProjectEntity.description]
 			)
 		}
 	}
@@ -60,8 +60,8 @@ open class ProjectRepository : Repository<Project> {
 	 */
 	override fun update(id: Int, entity: Project) {
 		ProjectEntity.update({ ProjectEntity.id eq id }) {
-			it[projectName] = entity.projectName
-			it[projectDescription] = entity.projectDescription.orEmpty()
+			it[name] = entity.name
+			it[description] = entity.description.orEmpty()
 		}
 	}
 }

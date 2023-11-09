@@ -1,7 +1,7 @@
 package gre.application.entities.project
 
 data class Project(
-	var projectId: Int,
-	var projectName: String,
-	var projectDescription: String? = null
+	var id: Int,
+	var name: String,
+	var description: String? = null
 )
