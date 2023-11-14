@@ -2,6 +2,8 @@ package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.Badge
+import com.github.mvysny.kaributools.BadgeVariant
+import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
@@ -15,21 +17,36 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import com.vaadin.flow.theme.lumo.LumoUtility.Grid.Column
+import gre.application.entities.task.Priority
+import gre.application.entities.task.Status
+import gre.application.entities.task.Task
 import gre.application.services.ProjectService
+import gre.application.services.TaskService
 import org.springframework.beans.factory.annotation.Autowired
 import org.vaadin.jchristophe.SortableConfig
 import org.vaadin.jchristophe.SortableGroupStore
 import org.vaadin.jchristophe.SortableLayout
+import java.time.LocalDate
 
 @PageTitle("Tasks")
 @Route("tasks/:projectId")
-class Tasks(@Autowired private val projectService: ProjectService) : KComposite(), BeforeEnterObserver {
+class Tasks(@Autowired private val projectService: ProjectService, @Autowired private val taskService: TaskService) :
+	KComposite(),
+	BeforeEnterObserver {
 	
 	private lateinit var projectId: String
 	
 	private lateinit var projectTitle: H2
 	
 	private lateinit var projectDescription: Paragraph
+	
+	private lateinit var todoCol: TaskColumn
+	
+	private lateinit var inProgressCol: TaskColumn
+	
+	private lateinit var doneCol: TaskColumn
+	
+	private var tasksForProject: List<Task> = emptyList()
 	
 	init {
 		val sortableConfig = SortableConfig()
@@ -66,7 +83,6 @@ class Tasks(@Autowired private val projectService: ProjectService) : KComposite(
 						}
 						
 						projectDescription = p {
-							text("Projects description")
 							addClassNames(
 								Margin.Bottom.XLARGE,
 								Margin.Top.NONE,
@@ -79,6 +95,13 @@ class Tasks(@Autowired private val projectService: ProjectService) : KComposite(
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
 						addThemeVariants(ButtonVariant.LUMO_SMALL)
+						onLeftClick {
+							val task = Task(2, "name", null, 1, Status.TODO, Priority.LOW, null, LocalDate.now())
+							val dialog = TaskFormDialog(Action.CREATE, task)
+							dialog.setTasks(tasksForProject)
+							dialog.addCreateListener { event -> taskService.create(event.getTask()) }
+							dialog.openDialog()
+						}
 					}
 					
 					button {
@@ -94,15 +117,9 @@ class Tasks(@Autowired private val projectService: ProjectService) : KComposite(
 				div {
 					addClassNames(Display.GRID, Column.COLUMNS_3, Gap.MEDIUM, Margin.SMALL)
 					
-					val todoCol = taskColumn("todo") {
-						addTasks(this, 6)
-					}
-					val inProgressCol = taskColumn("inprogress") {
-						addTasks(this, 1)
-					}
-					val doneCol = taskColumn("done") {
-						taskCard("4")
-					}
+					todoCol = taskColumn("todo")
+					inProgressCol = taskColumn("inprogress")
+					doneCol = taskColumn("done")
 					
 					val todoLayout = SortableLayout(todoCol, sortableConfig, groupStore)
 					val inProgressLayout = SortableLayout(inProgressCol, sortableConfig, groupStore)
@@ -142,13 +159,17 @@ class Tasks(@Autowired private val projectService: ProjectService) : KComposite(
 	
 	override fun beforeEnter(event: BeforeEnterEvent) {
 		projectId = event.routeParameters.get("projectId").get()
-		
 		val project = projectService.getById(projectId.toInt())
 		
 		if (project != null) {
-			projectTitle.text = project.projectName
-			projectDescription.text = project.projectDescription
+			projectTitle.text = project.name
+			projectDescription.text = project.description
 		}
+	}
+	
+	override fun onAttach(attachEvent: AttachEvent?) {
+		tasksForProject = taskService.getAll().filter { it.projectId == projectId.toInt() }
+		initColumns()
 	}
 	
 	private fun header(title: String): Div {
@@ -156,16 +177,41 @@ class Tasks(@Autowired private val projectService: ProjectService) : KComposite(
 		div.addClassNames(FontSize.MEDIUM, FontWeight.SEMIBOLD, Margin.Bottom.MEDIUM)
 		div.text = title
 		val badge = Badge("5")
+		badge.addThemeVariants(BadgeVariant.PILL, BadgeVariant.CONTRAST)
 		badge.addClassName(Margin.Left.SMALL)
 		div.add(badge)
 		
 		return div
 	}
 	
-	private fun addTasks(column: TaskColumn, taskNumber: Int) {
-		for (i in 0 until taskNumber) {
-			val id = "${column.id.get()}-${i}"
-			column.add(TaskCard(id))
+	/**
+	 * Get list of all tasks and add the TaskCard component to the column
+	 */
+	private fun fetchTasks(column: TaskColumn, status: String): List<Unit> {
+		return tasksForProject
+			.filter { it.status == status }
+			.map {
+				val taskCard = TaskCard(it)
+				attachListener(taskCard)
+				column.add(taskCard)
+			}
+	}
+	
+	private fun attachListener(taskCard: TaskCard) {
+		taskCard.addLeftClickListener {
+			val dialog = TaskFormDialog(Action.EDIT, taskCard.task)
+			dialog.setTasks(tasksForProject)
+			dialog.addSaveListener { event -> taskService.update(event.getTask()) }
+			dialog.openDialog()
 		}
+	}
+	
+	/**
+	 * Initialise all the columns
+	 */
+	private fun initColumns() {
+		fetchTasks(todoCol, Status.TODO)
+		fetchTasks(inProgressCol, Status.IN_PROGRESS)
+		fetchTasks(doneCol, Status.DONE)
 	}
 }
