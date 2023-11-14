@@ -9,6 +9,7 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.select.Select
 import com.vaadin.flow.shared.Registration
+import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin
 import gre.application.entities.task.Priority
 import gre.application.entities.task.Status
@@ -80,7 +81,11 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 				}
 				
 				horizontalLayout {
-					addClassNames(Margin.Top.SMALL)
+					colspan = 3
+					
+					// manually remove the style so can be overridden
+					style.remove("justify-content")
+					addClassNames(Margin.Top.MEDIUM, JustifyContent.END)
 					
 					button {
 						text = "Cancel"
