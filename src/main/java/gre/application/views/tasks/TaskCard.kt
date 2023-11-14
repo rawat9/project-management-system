@@ -3,76 +3,97 @@ package gre.application.views.tasks
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.BadgeVariant
 import com.github.mvysny.kaributools.tooltip
-import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.ComponentEvent
+import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.shared.Registration
 import com.vaadin.flow.theme.lumo.LumoUtility.*
+import gre.application.entities.task.Priority
+import gre.application.entities.task.Status
+import gre.application.entities.task.Task
+import java.time.format.DateTimeFormatter
 
-
-class TaskCard(title: String) : KComposite() {
+class TaskCard(val task: Task) : Div() {
+	
 	init {
-		ui {
+		div {
+			setId(id.toString())
+			addClassName("task-card")
+			
 			div {
-				setId(title)
-				addClassName("task-card")
+				text(task.name)
+			}
+			
+			onLeftClick {
+				fireEvent(LeftClickEvent(this@TaskCard))
+			}
+			
+			div {
+				addClassName(Margin.Vertical.SMALL)
 				
-				div {
-					text(title)
-				}
-				
-				div {
-					addClassName(Margin.Vertical.SMALL)
-					
-					icon(VaadinIcon.CIRCLE) {
-						setSize("8px")
-						color = "blue"
+				icon(VaadinIcon.CIRCLE) {
+					setSize("8px")
+					color = when (task.status) {
+						Status.TODO -> "blue"
+						Status.IN_PROGRESS -> "yellow"
+						Status.DONE -> "green"
+						else -> ""
 					}
-					span("To Do") {
-						addClassNames(
-							TextColor.SECONDARY,
-							FontSize.SMALL,
-							Margin.Left.XSMALL
+				}
+				span(task.status) {
+					addClassNames(
+						TextColor.SECONDARY,
+						FontSize.SMALL,
+						Margin.Left.XSMALL
+					)
+				}
+			}
+			val formatter = DateTimeFormatter.ofPattern("d MMM yyyy")
+			
+			horizontalLayout {
+				div {
+					badge(task.priority) {
+						addThemeVariants(BadgeVariant.SMALL, BadgeVariant.PILL)
+						when (task.priority) {
+							Priority.MEDIUM -> addThemeVariants(BadgeVariant.SUCCESS)
+							Priority.HIGH -> addThemeVariants(BadgeVariant.ERROR)
+							else -> {}
+						}
+						addClassNames(Margin.Right.XSMALL)
+						tooltip = "Priority"
+					}
+					badge(formatter.format(task.deadline)) {
+						addThemeVariants(
+							BadgeVariant.SMALL,
+							BadgeVariant.CONTRAST,
+							BadgeVariant.PILL
 						)
+						tooltip = "Deadline"
 					}
 				}
 				
-				horizontalLayout {
-					div {
-						badge("Medium") {
-							addThemeVariants(BadgeVariant.SMALL, BadgeVariant.PILL)
-							addClassNames(Margin.Right.XSMALL)
-							tooltip = "Priority"
-						}
-						badge("Nov 21, 2023") {
-							addThemeVariants(
-								BadgeVariant.SMALL,
-								BadgeVariant.CONTRAST,
-								BadgeVariant.PILL
-							)
-							tooltip = "Deadline"
-						}
-					}
+				badge {
+					addClassNames(Margin.Left.AUTO, Background.TRANSPARENT, BorderRadius.LARGE)
 					
-					badge {
-						addClassNames(Margin.Left.AUTO, Background.TRANSPARENT, BorderRadius.LARGE)
-						
-						icon(VaadinIcon.LINK) {
-							setSize("12px")
-							color = "gray"
-						}
-						span("2") {
-							addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY)
-						}
+					icon(VaadinIcon.LINK) {
+						setSize("10px")
+						color = "gray"
+					}
+					span("2") {
+						addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY)
 					}
 				}
 			}
 		}
 	}
+	
+	fun addLeftClickListener(listener: ComponentEventListener<LeftClickEvent>): Registration {
+		return addListener(LeftClickEvent::class.java, listener)
+	}
 }
 
-fun HasComponents.taskCard(
-	id: String,
-	block: TaskCard.() -> Unit = {},
-): TaskCard = init(
-	TaskCard(id),
-	block,
-)
+/**
+ * Events
+ */
+class LeftClickEvent(source: TaskCard) : ComponentEvent<TaskCard>(source, false)
