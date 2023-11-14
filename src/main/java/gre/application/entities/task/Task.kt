@@ -2,21 +2,29 @@ package gre.application.entities.task
 
 import java.time.LocalDate
 
-enum class Status {
-	TODO, IN_PROGRESS, DONE
+class Status {
+	companion object {
+		const val TODO = "To Do"
+		const val IN_PROGRESS = "In Progress"
+		const val DONE = "Done"
+	}
 }
 
-enum class Priority {
-	LOW, MEDIUM, HIGH
+class Priority {
+	companion object {
+		const val LOW = "Low"
+		const val MEDIUM = "Medium"
+		const val HIGH = "High"
+	}
 }
 
 data class Task(
 	var id: Int,
 	var name: String,
-	var description: String,
+	var description: String?,
 	var projectId: Int,
-	var status: Status,
-	var priority: Priority,
+	var status: String,
+	var priority: String,
 	var successorId: Int?,
 	var deadline: LocalDate
 )
