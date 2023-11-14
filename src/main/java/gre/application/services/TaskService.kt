@@ -22,7 +22,7 @@ class TaskService(private val taskRepository: TaskRepository) {
 		return taskRepository.delete(id)
 	}
 	
-	fun update(id: Int, entity: Task) {
-		return taskRepository.update(id, entity)
+	fun update(entity: Task) {
+		return taskRepository.update(entity)
 	}
 }

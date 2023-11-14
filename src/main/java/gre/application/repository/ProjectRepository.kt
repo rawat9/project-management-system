@@ -58,8 +58,8 @@ open class ProjectRepository : Repository<Project> {
 	/**
 	 * Updates a project entity with the given ID
 	 */
-	override fun update(id: Int, entity: Project) {
-		ProjectEntity.update({ ProjectEntity.id eq id }) {
+	override fun update(entity: Project) {
+		ProjectEntity.update({ ProjectEntity.id eq entity.id }) {
 			it[name] = entity.name
 			it[description] = entity.description.orEmpty()
 		}

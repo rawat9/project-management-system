@@ -58,8 +58,8 @@ open class TaskRepository : Repository<Task> {
 		return id.value
 	}
 	
-	override fun update(id: Int, entity: Task) {
-		TaskEntity.update({ TaskEntity.id eq id }) {
+	override fun update(entity: Task) {
+		TaskEntity.update({ TaskEntity.id eq entity.id }) {
 			it[name] = entity.name
 			it[description] = entity.description
 			it[projectId] = entity.projectId
