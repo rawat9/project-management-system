@@ -6,6 +6,7 @@ import com.github.mvysny.kaributools.tooltip
 import com.vaadin.flow.component.ComponentEvent
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.shared.Registration
 import com.vaadin.flow.theme.lumo.LumoUtility.*
@@ -15,6 +16,8 @@ import gre.application.entities.task.Task
 import java.time.format.DateTimeFormatter
 
 class TaskCard(val task: Task) : Div() {
+	
+	private lateinit var succesorCount: Span
 	
 	init {
 		div {
@@ -80,7 +83,7 @@ class TaskCard(val task: Task) : Div() {
 						setSize("10px")
 						color = "gray"
 					}
-					span("2") {
+					succesorCount = span {
 						addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY)
 					}
 				}
@@ -90,6 +93,13 @@ class TaskCard(val task: Task) : Div() {
 	
 	fun addLeftClickListener(listener: ComponentEventListener<LeftClickEvent>): Registration {
 		return addListener(LeftClickEvent::class.java, listener)
+	}
+	
+	fun setSuccessorCount(count: Int) {
+		if (count == 0) {
+			succesorCount.parent.get().removeFromParent()
+		}
+		succesorCount.text = count.toString()
 	}
 }
 

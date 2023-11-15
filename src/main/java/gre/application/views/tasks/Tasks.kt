@@ -191,7 +191,9 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 		return tasksForProject
 			.filter { it.status == status }
 			.map {
+				val successorCount = tasksForProject.filter { task -> task.successorId == it.id }.size
 				val taskCard = TaskCard(it)
+				taskCard.setSuccessorCount(successorCount)
 				attachListener(taskCard)
 				column.add(taskCard)
 			}
