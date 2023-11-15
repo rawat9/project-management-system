@@ -40,7 +40,7 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 						}
 						
 						p {
-							text("Projects represents tasks, bugs")
+							text("Create and manage all your projects")
 							addClassNames(Margin.Bottom.XLARGE, Margin.Top.NONE, TextColor.SECONDARY)
 						}
 					}
