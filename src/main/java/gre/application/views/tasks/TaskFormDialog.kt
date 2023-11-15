@@ -4,16 +4,24 @@ import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.setPrimary
 import com.vaadin.flow.component.ComponentEvent
 import com.vaadin.flow.component.ComponentEventListener
+import com.vaadin.flow.component.Text
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
+import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.select.Select
+import com.vaadin.flow.data.binder.ValidationException
 import com.vaadin.flow.shared.Registration
 import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin
 import gre.application.entities.task.Priority
 import gre.application.entities.task.Status
 import gre.application.entities.task.Task
+
 
 /**
  * Form action:
@@ -47,32 +55,31 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 				
 				textField {
 					label = "Task name"
-					isRequired = true
 					colspan = 3
-					bind(binder).bind("name")
+					binder.forField(this).asRequired("Field is required").bind("name")
 				}
 				
 				textArea {
 					label = "Description"
 					colspan = 3
-					bind(binder).bind("description")
+					binder.forField(this).bind("description")
 				}
 				
 				select<String> {
 					label = "Status"
 					setItems(Status.TODO, Status.IN_PROGRESS, Status.DONE)
-					bind(binder).bind("status")
+					binder.forField(this).asRequired("Field is required").bind("status")
 				}
 				
 				select<String> {
 					label = "Priority"
 					setItems(Priority.LOW, Priority.MEDIUM, Priority.HIGH)
-					bind(binder).bind("priority")
+					binder.forField(this).asRequired("Field is required").bind("priority")
 				}
 				
 				datePicker {
 					label = "Deadline"
-					bind(binder).bind("deadline")
+					binder.forField(this).asRequired("Field is required").bind("deadline")
 				}
 				
 				successors = select<Int?> {
@@ -94,17 +101,27 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 					button {
 						text = if (action.name == "EDIT") "Save" else "Create"
 						setPrimary()
+						isEnabled = false
+						
+						binder.addStatusChangeListener { event ->
+							val isValid = event.binder.isValid
+							this.isEnabled = isValid
+						}
 						
 						onLeftClick {
-							if (action.name == "CREATE") {
-								binder.writeBean(task)
-								fireEvent(CreateEvent(this@formLayout, task))
-							} else {
-								if (binder.validate().isOk) {
-									fireEvent(SaveEvent(this@formLayout, binder.bean))
+							try {
+								if (action.name == "CREATE") {
+									binder.writeBeanIfValid(task)
+									fireEvent(CreateEvent(this@formLayout, task))
+								} else {
+									if (binder.isValid) {
+										fireEvent(SaveEvent(this@formLayout, binder.bean))
+									}
 								}
+								showSuccess()
+							} catch (e: ValidationException) {
+								notifyValidationError()
 							}
-							showSuccess()
 						}
 					}
 				}
@@ -136,11 +153,32 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 	}
 	
 	private fun showSuccess() {
-		val notification =
-			if (action.name == "CREATE") Notification.show("Task created successfully") else Notification.show("Task updated successfully")
-		notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
-		notification.position = Notification.Position.TOP_CENTER
+		if (action.name == "CREATE") {
+			showSubmitSuccess("Task created successfully").open()
+		} else {
+			showSubmitSuccess("Task updated successfully").open()
+		}
 		this.closeDialog()
+	}
+	
+	private fun showSubmitSuccess(text: String): Notification {
+		val notification = Notification()
+		notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
+		val icon = VaadinIcon.CHECK_CIRCLE.create()
+		
+		val closeBtn = Button(VaadinIcon.CLOSE_SMALL.create()) { _ -> notification.close() }
+		closeBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE)
+		
+		val layout = HorizontalLayout(icon, Text(text), closeBtn)
+		layout.alignItems = FlexComponent.Alignment.CENTER
+		notification.duration = 2000
+		notification.position = Notification.Position.TOP_CENTER
+		notification.add(layout)
+		return notification
+	}
+	
+	private fun notifyValidationError() {
+		Notification.show("Something went wrong", 2000, Notification.Position.TOP_CENTER)
 	}
 	
 	fun addSaveListener(listener: ComponentEventListener<SaveEvent>): Registration {
