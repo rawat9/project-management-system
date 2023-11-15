@@ -1,6 +1,7 @@
 package gre.application.views.projects
 
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.data.binder.BeanValidationBinder
@@ -77,5 +78,6 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 			binder.writeBean(project)
 			projectService.create(project)
 		}
+		UI.getCurrent().page.reload()
 	}
 }

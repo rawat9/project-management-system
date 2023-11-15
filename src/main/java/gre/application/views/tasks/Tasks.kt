@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.Paragraph
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
@@ -101,7 +100,16 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
 						onLeftClick {
-							val task = Task(2, "name", null, 1, Status.TODO, Priority.LOW, null, LocalDate.now())
+							val task = Task(
+								2,
+								"name",
+								null,
+								projectId.toInt(),
+								Status.TODO,
+								Priority.LOW,
+								null,
+								LocalDate.now()
+							)
 							val dialog = TaskFormDialog(Action.CREATE, task)
 							dialog.setTasks(tasksForProject)
 							dialog.addCreateListener { event -> taskService.create(event.getTask()) }
@@ -129,16 +137,21 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					
 					div {
 						add(header("To Do"))
+						todoLayout.addSortableComponentAddListener { e ->
+							val task = (e.component as TaskCard).task
+							task.status = Status.TODO
+							taskService.update(task)
+							UI.getCurrent().page.reload()
+						}
 						add(todoLayout)
 					}
 					div {
 						add(header("In Progress"))
 						inProgressLayout.addSortableComponentAddListener { e ->
-							if (e.component.id.get().startsWith("todo")) {
-								Notification.show("task is in-progress")
-							} else {
-								Notification.show("back to in-progress")
-							}
+							val task = (e.component as TaskCard).task
+							task.status = Status.IN_PROGRESS
+							taskService.update(task)
+							UI.getCurrent().page.reload()
 						}
 						add(inProgressLayout)
 					}
@@ -146,11 +159,10 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					div {
 						add(header("Done"))
 						doneLayout.addSortableComponentAddListener { e ->
-							if (e.component.id.get().startsWith("inprogress")) {
-								Notification.show("task has been completed")
-							} else {
-								Notification.show("...")
-							}
+							val task = (e.component as TaskCard).task
+							task.status = Status.DONE
+							taskService.update(task)
+							UI.getCurrent().page.reload()
 						}
 						add(doneLayout)
 					}

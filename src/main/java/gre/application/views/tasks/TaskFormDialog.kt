@@ -5,6 +5,7 @@ import com.github.mvysny.kaributools.setPrimary
 import com.vaadin.flow.component.ComponentEvent
 import com.vaadin.flow.component.ComponentEventListener
 import com.vaadin.flow.component.Text
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.formlayout.FormLayout
@@ -118,6 +119,7 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 										fireEvent(SaveEvent(this@formLayout, binder.bean))
 									}
 								}
+								UI.getCurrent().page.reload()
 								showSuccess()
 							} catch (e: ValidationException) {
 								notifyValidationError()

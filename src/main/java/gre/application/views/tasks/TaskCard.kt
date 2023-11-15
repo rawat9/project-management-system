@@ -38,9 +38,9 @@ class TaskCard(val task: Task) : Div() {
 				icon(VaadinIcon.CIRCLE) {
 					setSize("8px")
 					color = when (task.status) {
-						Status.TODO -> "blue"
-						Status.IN_PROGRESS -> "yellow"
-						Status.DONE -> "green"
+						Status.TODO -> "#3B71CA"
+						Status.IN_PROGRESS -> "#E4A11B"
+						Status.DONE -> "#14A44D"
 						else -> ""
 					}
 				}
