@@ -4,9 +4,9 @@ import com.vaadin.flow.component.page.AppShellConfigurator
 import com.vaadin.flow.server.PWA
 import com.vaadin.flow.theme.Theme
 import org.jetbrains.exposed.spring.autoconfigure.ExposedAutoConfiguration
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
 
 /**
  * The entry point of the Spring Boot application.
@@ -22,5 +22,5 @@ import org.springframework.boot.runApplication
 open class Application : AppShellConfigurator
 
 fun main(args: Array<String>) {
-	runApplication<Application>(*args)
+	SpringApplication.run(Application::class.java, *args)
 }
