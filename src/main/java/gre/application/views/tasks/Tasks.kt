@@ -1,8 +1,6 @@
 package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.mvysny.kaributools.Badge
-import com.github.mvysny.kaributools.BadgeVariant
 import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
@@ -176,11 +174,6 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 		val div = Div()
 		div.addClassNames(FontSize.MEDIUM, FontWeight.SEMIBOLD, Margin.Bottom.MEDIUM)
 		div.text = title
-		val badge = Badge("5")
-		badge.addThemeVariants(BadgeVariant.PILL, BadgeVariant.CONTRAST)
-		badge.addClassName(Margin.Left.SMALL)
-		div.add(badge)
-		
 		return div
 	}
 	
