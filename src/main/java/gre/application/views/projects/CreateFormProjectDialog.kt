@@ -9,7 +9,9 @@ import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.data.binder.BeanValidationBinder
 import gre.application.entities.project.Project
 
-class CreateFormProjectDialog(handler: (binder: BeanValidationBinder<Project>) -> Unit) : KComposite() {
+typealias Handler<T> = (binder: BeanValidationBinder<T>) -> Unit
+
+class CreateFormProjectDialog(handler: Handler<Project>) : KComposite() {
 	
 	private val binder: BeanValidationBinder<Project> = beanValidationBinder<Project>()
 	
@@ -21,12 +23,12 @@ class CreateFormProjectDialog(handler: (binder: BeanValidationBinder<Project>) -
 				textField {
 					label = "Project name"
 					isRequired = true
-					bind(binder).bind("projectName")
+					bind(binder).bind("name")
 				}
 				
 				textArea {
 					label = "Description"
-					bind(binder).bind("projectDescription")
+					bind(binder).bind("description")
 				}
 			}
 			

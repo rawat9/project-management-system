@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.javatime.date
 import java.time.LocalDate
 
 object ProjectEntity : IntIdTable("project") {
-	val projectName: Column<String> = varchar("project_name", 100)
-	val projectDescription: Column<String> = largeText("project_description")
+	val name: Column<String> = varchar("name", 100)
+	val description: Column<String?> = largeText("description").nullable()
 	val createdDate: Column<LocalDate> = date("created_date").clientDefault { LocalDate.now() }
 }
