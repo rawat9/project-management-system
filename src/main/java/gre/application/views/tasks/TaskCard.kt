@@ -76,15 +76,15 @@ class TaskCard(val task: Task) : Div() {
 					}
 				}
 				
-				badge {
-					addClassNames(Margin.Left.AUTO, Background.TRANSPARENT, BorderRadius.LARGE)
+				div {
+					addClassNames(Display.FLEX, AlignItems.CENTER, Margin.Left.AUTO, Margin.Right.XSMALL)
 					
 					icon(VaadinIcon.LINK) {
 						setSize("10px")
 						color = "gray"
 					}
 					succesorCount = span {
-						addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY)
+						addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY, FontSize.SMALL)
 					}
 				}
 			}
