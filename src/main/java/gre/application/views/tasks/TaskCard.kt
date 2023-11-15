@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
 
 class TaskCard(val task: Task) : Div() {
 	
-	private lateinit var succesorCount: Span
+	private lateinit var successorCount: Span
 	
 	init {
 		div {
@@ -83,7 +83,7 @@ class TaskCard(val task: Task) : Div() {
 						setSize("10px")
 						color = "gray"
 					}
-					succesorCount = span {
+					successorCount = span {
 						addClassNames(Margin.Left.XSMALL, TextColor.SECONDARY, FontSize.SMALL)
 					}
 				}
@@ -97,9 +97,9 @@ class TaskCard(val task: Task) : Div() {
 	
 	fun setSuccessorCount(count: Int) {
 		if (count == 0) {
-			succesorCount.parent.get().removeFromParent()
+			successorCount.parent.get().removeFromParent()
 		}
-		succesorCount.text = count.toString()
+		successorCount.text = count.toString()
 	}
 }
 
