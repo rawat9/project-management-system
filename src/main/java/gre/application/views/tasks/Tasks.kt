@@ -2,6 +2,7 @@ package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.AttachEvent
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
@@ -60,13 +61,20 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 		
 		ui {
 			div {
+				button {
+					addClassNames(Position.FIXED, Margin.SMALL)
+					style.set("left", "0")
+					text = "Back"
+					icon = VaadinIcon.ANGLE_LEFT.create()
+					addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_CONTRAST)
+					onLeftClick { UI.getCurrent().page.history.back() }
+				}
 				addClassNames(
 					MaxWidth.SCREEN_LARGE,
 					Margin.Horizontal.AUTO,
 					Padding.Bottom.LARGE,
 					Padding.Horizontal.LARGE
 				)
-				
 				horizontalLayout {
 					alignItems = FlexComponent.Alignment.BASELINE
 					justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
@@ -92,7 +100,6 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					button {
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
-						addThemeVariants(ButtonVariant.LUMO_SMALL)
 						onLeftClick {
 							val task = Task(2, "name", null, 1, Status.TODO, Priority.LOW, null, LocalDate.now())
 							val dialog = TaskFormDialog(Action.CREATE, task)
@@ -105,10 +112,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					button {
 						text = "View as graph"
 						icon = VaadinIcon.CLUSTER.create()
-						addThemeVariants(
-							ButtonVariant.LUMO_CONTRAST,
-							ButtonVariant.LUMO_SMALL
-						)
+						addThemeVariants(ButtonVariant.LUMO_CONTRAST)
 					}
 				}
 				
