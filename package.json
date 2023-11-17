@@ -149,9 +149,9 @@
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
+    "sortablejs": "$sortablejs",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "date-fns": "$date-fns",
-    "sortablejs": "$sortablejs"
+    "date-fns": "$date-fns"
   },
   "vaadin": {
     "dependencies": {

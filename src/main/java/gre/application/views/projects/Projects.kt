@@ -1,6 +1,7 @@
 package gre.application.views.projects
 
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.data.binder.BeanValidationBinder
@@ -40,7 +41,7 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 						}
 						
 						p {
-							text("Projects represents tasks, bugs")
+							text("Create and manage all your projects")
 							addClassNames(Margin.Bottom.XLARGE, Margin.Top.NONE, TextColor.SECONDARY)
 						}
 					}
@@ -61,9 +62,9 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 					
 					projectService.getAll().forEach {
 						projectCard(
-							id = it.projectId,
-							title = it.projectName,
-							description = it.projectDescription.orEmpty()
+							id = it.id,
+							title = it.name,
+							description = it.description.orEmpty()
 						)
 					}
 				}
@@ -77,6 +78,6 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 			binder.writeBean(project)
 			projectService.create(project)
 		}
-//		UI.getCurrent().page.reload()
+		UI.getCurrent().page.reload()
 	}
 }

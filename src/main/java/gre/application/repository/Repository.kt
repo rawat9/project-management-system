@@ -8,7 +8,7 @@ interface Repository<T> {
 	
 	fun getById(id: Int): T?
 	
-	fun update(id: Int, entity: T): Unit
+	fun update(entity: T): Unit
 	
 	fun delete(id: Int): Unit
 	

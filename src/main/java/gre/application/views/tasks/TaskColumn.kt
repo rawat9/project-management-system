@@ -4,9 +4,9 @@ import com.github.mvysny.karibudsl.v10.init
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.html.Div
 
-class TaskColumn(id: String) : Div() {
+class TaskColumn(val title: String) : Div() {
 	init {
-		setId(id)
+		setId(title)
 		addClassNames("column")
 	}
 }
