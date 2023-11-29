@@ -15,6 +15,7 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import com.vaadin.flow.theme.lumo.LumoUtility.Grid.Column
+import gre.application.entities.successor.Successor
 import gre.application.entities.task.Priority
 import gre.application.entities.task.Status
 import gre.application.entities.task.Task
@@ -99,6 +100,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					button {
 						text = "New Task"
 						icon = VaadinIcon.PLUS.create()
+						addThemeVariants(ButtonVariant.LUMO_SMALL)
 						onLeftClick {
 							val task = Task(
 								2,
@@ -107,12 +109,11 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 								projectId.toInt(),
 								Status.TODO,
 								Priority.LOW,
-								null,
 								LocalDate.now()
 							)
 							val dialog = TaskFormDialog(Action.CREATE, task)
 							dialog.setTasks(tasksForProject)
-							dialog.addCreateListener { event -> taskService.create(event.getTask()) }
+							dialog.addCreateListener { _ -> taskService.create(task) }
 							dialog.openDialog()
 						}
 					}
@@ -120,7 +121,16 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 					button {
 						text = "View as graph"
 						icon = VaadinIcon.CLUSTER.create()
-						addThemeVariants(ButtonVariant.LUMO_CONTRAST)
+						addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST)
+						onLeftClick {
+							UI.getCurrent().navigate("/graph")
+						}
+					}
+					
+					button {
+						icon = VaadinIcon.ARCHIVE.create()
+						text = "Delete project"
+						addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR)
 					}
 				}
 				
@@ -200,7 +210,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 		return tasksForProject
 			.filter { it.status == status }
 			.map {
-				val successorCount = tasksForProject.filter { task -> task.successorId == it.id }.size
+				val successorCount = it.successors.size
 				val taskCard = TaskCard(it)
 				taskCard.setSuccessorCount(successorCount)
 				attachListener(taskCard)
@@ -210,9 +220,13 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 	
 	private fun attachListener(taskCard: TaskCard) {
 		taskCard.addLeftClickListener {
-			val dialog = TaskFormDialog(Action.EDIT, taskCard.task)
+			val task = taskCard.task
+			val dialog = TaskFormDialog(Action.EDIT, task)
 			dialog.setTasks(tasksForProject)
-			dialog.addSaveListener { event -> taskService.update(event.getTask()) }
+			dialog.addSaveListener { taskService.update(task) }
+			dialog.addDeleteListener { taskService.delete(task.id) }
+			dialog.onSuccessorAddListener { event -> taskService.addSuccessor(event.getData() as Successor) }
+			dialog.onSuccessorRemoveListener { event -> taskService.removeSuccessor(event.getData() as Successor) }
 			dialog.openDialog()
 		}
 	}

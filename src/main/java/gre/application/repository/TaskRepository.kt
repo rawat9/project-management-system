@@ -1,9 +1,12 @@
 package gre.application.repository
 
+import gre.application.entities.successor.Successor
+import gre.application.entities.successor.SuccessorEntity
 import gre.application.entities.task.Task
 import gre.application.entities.task.TaskEntity
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,7 +27,7 @@ open class TaskRepository : Repository<Task> {
 				deadline = it[TaskEntity.deadline],
 				status = it[TaskEntity.status],
 				priority = it[TaskEntity.priority],
-				successorId = it[TaskEntity.successorId]
+				successors = getAllSuccessors(taskId = it[TaskEntity.id].value),
 			)
 		}
 	}
@@ -42,7 +45,7 @@ open class TaskRepository : Repository<Task> {
 				deadline = it[TaskEntity.deadline],
 				status = it[TaskEntity.status],
 				priority = it[TaskEntity.priority],
-				successorId = it[TaskEntity.successorId]
+				successors = getAllSuccessors(taskId = it[TaskEntity.id].value),
 			)
 		}
 	}
@@ -65,10 +68,33 @@ open class TaskRepository : Repository<Task> {
 			it[deadline] = entity.deadline
 			it[status] = entity.status
 			it[priority] = entity.priority
-			it[successorId] = entity.successorId
 		}
-		
 		return id.value
+	}
+	
+	private fun getAllSuccessors(taskId: Int): Set<Int> {
+		return SuccessorEntity.select { SuccessorEntity.taskId eq taskId }.map { it[SuccessorEntity.id] }.toSet()
+	}
+	
+	/**
+	 * Deletes a successor with the given id and id of the task it is associated to
+	 */
+	fun removeSuccessor(successor: Successor) {
+		transaction {
+			SuccessorEntity.deleteWhere { id eq successor.id and (taskId eq successor.taskId) }
+		}
+	}
+	
+	/**
+	 * Adds a new successor to the task
+	 */
+	fun addSuccessor(entity: Successor) {
+		transaction {
+			SuccessorEntity.insert {
+				it[id] = entity.id
+				it[taskId] = entity.taskId
+			}
+		}
 	}
 	
 	/**
@@ -82,7 +108,6 @@ open class TaskRepository : Repository<Task> {
 			it[deadline] = entity.deadline
 			it[status] = entity.status
 			it[priority] = entity.priority
-			it[successorId] = entity.successorId
 		}
 	}
 }

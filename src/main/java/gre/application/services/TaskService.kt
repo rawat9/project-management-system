@@ -1,5 +1,6 @@
 package gre.application.services
 
+import gre.application.entities.successor.Successor
 import gre.application.entities.task.Task
 import gre.application.repository.TaskRepository
 import org.springframework.stereotype.Service
@@ -24,5 +25,13 @@ class TaskService(private val taskRepository: TaskRepository) {
 	
 	fun update(entity: Task) {
 		return taskRepository.update(entity)
+	}
+	
+	fun addSuccessor(successor: Successor) {
+		return taskRepository.addSuccessor(successor)
+	}
+	
+	fun removeSuccessor(successor: Successor) {
+		return taskRepository.removeSuccessor(successor)
 	}
 }

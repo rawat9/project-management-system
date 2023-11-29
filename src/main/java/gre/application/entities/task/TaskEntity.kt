@@ -13,7 +13,6 @@ object TaskEntity : IntIdTable("task") {
 	val description: Column<String?> = largeText("description").nullable()
 	val status: Column<String> = varchar("status", 20)
 	val priority: Column<String> = varchar("priority", 20)
-	val successorId: Column<Int?> = integer("successor_id").nullable()
 	val createdDate: Column<LocalDate> = date("created_date").clientDefault { LocalDate.now() }
 	val deadline: Column<LocalDate> = date("deadline")
 }

@@ -1,0 +1,14 @@
+.matrix {
+    display: grid;
+    grid-template-columns: repeat(var(--matrix-size), 1fr);
+    min-width: 200px;
+    width: 100%;
+    padding: 2rem;
+}
+
+.cell {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.5rem;
+}

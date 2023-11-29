@@ -1,24 +1,22 @@
 package gre.application.views.tasks
 
 import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.karibudsl.v23.multiSelectComboBox
 import com.github.mvysny.kaributools.setPrimary
-import com.vaadin.flow.component.ComponentEvent
-import com.vaadin.flow.component.ComponentEventListener
-import com.vaadin.flow.component.Text
-import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
+import com.vaadin.flow.component.combobox.MultiSelectComboBox
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
-import com.vaadin.flow.component.select.Select
 import com.vaadin.flow.data.binder.ValidationException
 import com.vaadin.flow.shared.Registration
-import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin
+import gre.application.entities.successor.Successor
 import gre.application.entities.task.Priority
 import gre.application.entities.task.Status
 import gre.application.entities.task.Task
@@ -33,11 +31,11 @@ enum class Action {
 	EDIT, CREATE
 }
 
-class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
+class TaskFormDialog(private val action: Action, val task: Task) : KComposite() {
 	
 	private val binder = beanValidationBinder<Task>()
 	
-	private lateinit var successors: Select<Int?>
+	private lateinit var successors: MultiSelectComboBox<Int>
 	
 	private val root = ui {
 		dialog {
@@ -83,9 +81,22 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 					binder.forField(this).asRequired("Field is required").bind("deadline")
 				}
 				
-				successors = select<Int?> {
-					label = "Successor"
+				successors = multiSelectComboBox {
+					isVisible = action.name == "EDIT"
+					label = "Successors"
 					colspan = 3
+				}
+				
+				successors.addSelectionListener { event ->
+					if (event.addedSelection.isNotEmpty()) {
+						val successorId = event.addedSelection.elementAt(0)
+						fireEvent(AddSuccessorEvent(event.source, Successor(id = successorId, taskId = task.id)))
+					}
+					
+					if (event.removedSelection.isNotEmpty()) {
+						val successorId = event.removedSelection.elementAt(0)
+						fireEvent(RemoveSuccessorEvent(event.source, Successor(id = successorId, taskId = task.id)))
+					}
 				}
 				
 				horizontalLayout {
@@ -93,36 +104,49 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 					
 					// manually remove the style so can be overridden
 					style.remove("justify-content")
-					addClassNames(Margin.Top.MEDIUM, JustifyContent.END)
+					addClassNames(Margin.Top.MEDIUM)
 					
 					button {
-						text = "Cancel"
-						onLeftClick { closeDialog() }
-					}
-					button {
-						text = if (action.name == "EDIT") "Save" else "Create"
-						setPrimary()
-						isEnabled = false
-						
-						binder.addStatusChangeListener { event ->
-							val isValid = event.binder.isValid
-							this.isEnabled = isValid
-						}
-						
+						text = "Delete"
+						addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR)
 						onLeftClick {
-							try {
-								if (action.name == "CREATE") {
-									binder.writeBeanIfValid(task)
-									fireEvent(CreateEvent(this@formLayout, task))
-								} else {
-									if (binder.isValid) {
-										fireEvent(SaveEvent(this@formLayout, binder.bean))
+							fireEvent(DeleteEvent(this@formLayout))
+							UI.getCurrent().page.reload()
+						}
+					}
+					
+					div {
+						addClassName(Margin.Left.AUTO)
+						button {
+							text = "Cancel"
+							addClassName(Margin.Right.SMALL)
+							onLeftClick { closeDialog() }
+						}
+						button {
+							text = if (action.name == "EDIT") "Save" else "Create"
+							setPrimary()
+							isEnabled = false
+							
+							binder.addStatusChangeListener { event ->
+								val isValid = event.binder.isValid
+								this.isEnabled = isValid
+							}
+							
+							onLeftClick {
+								try {
+									if (action.name == "CREATE") {
+										binder.writeBeanIfValid(task)
+										fireEvent(CreateEvent(this@formLayout))
+									} else {
+										if (binder.isValid) {
+											fireEvent(SaveEvent(this@formLayout))
+										}
 									}
+									UI.getCurrent().page.reload()
+									showSuccess()
+								} catch (e: ValidationException) {
+									notifyValidationError()
 								}
-								UI.getCurrent().page.reload()
-								showSuccess()
-							} catch (e: ValidationException) {
-								notifyValidationError()
 							}
 						}
 					}
@@ -146,8 +170,8 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 		if (action.name == "EDIT") {
 			items.removeItem(task.id)
 		}
-		binder.forField(successors).bind("successorId")
-		successors.value = task.successorId
+		binder.forField(successors).bind("successors")
+		successors.value = task.successors.toSet()
 		successors.setItemLabelGenerator { id ->
 			val foundTask = tasksForProject.find { it.id == id }
 			if (foundTask !== null) "$id - ${foundTask.name}" else ""
@@ -187,27 +211,47 @@ class TaskFormDialog(val action: Action, val task: Task) : KComposite() {
 		return addListener(SaveEvent::class.java, listener)
 	}
 	
+	fun onSuccessorAddListener(listener: ComponentEventListener<AddSuccessorEvent>): Registration {
+		return addListener(AddSuccessorEvent::class.java, listener)
+	}
+	
+	fun onSuccessorRemoveListener(listener: ComponentEventListener<RemoveSuccessorEvent>): Registration {
+		return addListener(RemoveSuccessorEvent::class.java, listener)
+	}
+	
 	fun addCreateListener(listener: ComponentEventListener<CreateEvent>): Registration {
 		return addListener(CreateEvent::class.java, listener)
+	}
+	
+	fun addDeleteListener(listener: ComponentEventListener<DeleteEvent>): Registration {
+		return addListener(DeleteEvent::class.java, listener)
 	}
 }
 
 /**
  * Events
  */
-abstract class TaskFormEvent protected constructor(source: KFormLayout, task: Task) :
-	ComponentEvent<KFormLayout>(source, false) {
-	private val task: Task
+abstract class Event<Source : Component> protected constructor(source: Source, data: Any? = null) :
+	ComponentEvent<Source>(source, false) {
+	private val data: Any?
 	
 	init {
-		this.task = task
+		this.data = data
 	}
 	
-	fun getTask(): Task {
-		return task
+	fun getData(): Any? {
+		return data
 	}
 }
 
-class CreateEvent(source: KFormLayout, task: Task) : TaskFormEvent(source, task)
+class CreateEvent(source: KFormLayout) : Event<KFormLayout>(source)
 
-class SaveEvent(source: KFormLayout, task: Task) : TaskFormEvent(source, task)
+class DeleteEvent(source: KFormLayout) : Event<KFormLayout>(source)
+
+class SaveEvent(source: KFormLayout) : Event<KFormLayout>(source)
+
+class AddSuccessorEvent(source: MultiSelectComboBox<Int>, data: Successor) :
+	Event<MultiSelectComboBox<Int>>(source, data)
+
+class RemoveSuccessorEvent(source: MultiSelectComboBox<Int>, data: Successor) :
+	Event<MultiSelectComboBox<Int>>(source, data)

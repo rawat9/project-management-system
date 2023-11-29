@@ -25,6 +25,6 @@ data class Task(
 	var projectId: Int,
 	var status: String,
 	var priority: String,
-	var successorId: Int?,
-	var deadline: LocalDate
+	var deadline: LocalDate,
+	var successors: Collection<Int> = emptySet()
 )
