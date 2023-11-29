@@ -67,7 +67,9 @@
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
     "lit": "2.6.1",
-    "sortablejs": "1.14.0"
+    "sortablejs": "1.14.0",
+    "svg-pan-zoom": "3.6.1",
+    "viz.js": "2.1.2"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "5.0.2",
@@ -151,7 +153,9 @@
     "@polymer/polymer": "$@polymer/polymer",
     "sortablejs": "$sortablejs",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "date-fns": "$date-fns"
+    "date-fns": "$date-fns",
+    "viz.js": "$viz.js",
+    "svg-pan-zoom": "$svg-pan-zoom"
   },
   "vaadin": {
     "dependencies": {
@@ -220,7 +224,9 @@
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
       "lit": "2.6.1",
-      "sortablejs": "1.14.0"
+      "sortablejs": "1.14.0",
+      "svg-pan-zoom": "3.6.1",
+      "viz.js": "2.1.2"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "5.0.2",
@@ -238,6 +244,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "a5448cf14df143ef33ea8de3f784eafb5c7c9431203f3aac0360b315fec62942"
+    "hash": "2505cdd11e0282cb41f8206ccb3c095eb6722d8800cc44930549d24dd2aa065b"
   }
 }
