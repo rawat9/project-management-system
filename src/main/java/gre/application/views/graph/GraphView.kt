@@ -1,24 +1,29 @@
 package gre.application.views.graph
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.router.PageTitle
-import com.vaadin.flow.router.Route
+import com.vaadin.flow.router.*
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import de.f0rce.viz.Viz
 import de.f0rce.viz.VizFormat
+import gre.application.graph.Graph
 import gre.application.services.TaskService
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 
-@PageTitle("Graph")
-@Route("graph")
-class Graph(@Autowired private val taskService: TaskService) : KComposite() {
+@PageTitle("GraphView")
+@Route("graph/:projectId")
+class GraphView(@Autowired private val taskService: TaskService) : KComposite(), BeforeEnterObserver,
+	HasErrorParameter<NotFoundException> {
 	
-	private val graph = "digraph { a; b; c; d; e; f; g }"
+	private lateinit var projectId: String
+	
+	private lateinit var tasksToSuccessorsMap: Map<Int, Collection<Int>>;
+	
+	private val graph = "digraph { a -> b; a -> c; b -> d; c -> d }"
 	
 	init {
 		ui {
@@ -34,16 +39,38 @@ class Graph(@Autowired private val taskService: TaskService) : KComposite() {
 				splitLayout {
 					height = "100vh"
 					addToPrimary(getGraph())
-					addToSecondary(getMatrix(7))
+					addToSecondary(getMatrix(5))
 					setSplitterPosition(60.0)
 				}
 			}
 		}
 	}
 	
-	override fun onAttach(attachEvent: AttachEvent?) {
-		val successors = taskService.getAll().map { task -> listOf(task.id, task.successors) }
-		println(successors)
+	override fun beforeEnter(event: BeforeEnterEvent) {
+		projectId = event.routeParameters.get("projectId").get()
+		tasksToSuccessorsMap = taskService.getAll()
+			.filter { task -> task.projectId == projectId.toInt() }.associate { task -> task.id to task.successors }
+		
+		// initialise an empty graph structure
+		val graph = Graph<Int>()
+		
+		// generate nodes
+		val nodes = tasksToSuccessorsMap.mapKeys { graph.createNode(it.key) }.keys
+		
+		// add edges between nodes
+		nodes.forEach { node ->
+			val successors = tasksToSuccessorsMap[node.data].orEmpty()
+			if (successors.isNotEmpty()) {
+				successors.forEach { successor ->
+					val destinationNode = nodes.find { it.data == successor }
+					if (destinationNode != null) {
+						graph.addEdge(node, destinationNode)
+					}
+				}
+			}
+		}
+		
+		println(graph.asAdjacencyList())
 	}
 	
 	private fun getGraph(): Div {
@@ -79,5 +106,10 @@ class Graph(@Autowired private val taskService: TaskService) : KComposite() {
 		}
 		div.add(matrix)
 		return div
+	}
+	
+	override fun setErrorParameter(event: BeforeEnterEvent, p1: ErrorParameter<NotFoundException>): Int {
+		element.text = "Route not found"
+		return HttpServletResponse.SC_NOT_FOUND
 	}
 }
