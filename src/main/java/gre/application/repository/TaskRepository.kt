@@ -73,7 +73,7 @@ open class TaskRepository : Repository<Task> {
 	}
 	
 	private fun getAllSuccessors(taskId: Int): Set<Int> {
-		return SuccessorEntity.select { SuccessorEntity.taskId eq taskId }.map { it[SuccessorEntity.id] }.toSet()
+		return SuccessorEntity.select { SuccessorEntity.taskId eq taskId }.map { it[SuccessorEntity.id].value }.toSet()
 	}
 	
 	/**
