@@ -1,10 +1,12 @@
 package gre.application.views.graph
 
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.*
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import de.f0rce.viz.Viz
@@ -23,7 +25,11 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 	
 	private lateinit var tasksToSuccessorsMap: Map<Int, Collection<Int>>;
 	
-	private val graph = "digraph { a -> b; a -> c; b -> d; c -> d }"
+	private val graphUI = "digraph { a -> b; a -> c; b -> d; c -> d }"
+	
+	private lateinit var graph: Graph<Int>;
+	
+	private lateinit var layout: SplitLayout;
 	
 	init {
 		ui {
@@ -36,10 +42,9 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 					addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_CONTRAST)
 					onLeftClick { UI.getCurrent().page.history.back() }
 				}
-				splitLayout {
+				layout = splitLayout {
 					height = "100vh"
 					addToPrimary(getGraph())
-					addToSecondary(getMatrix(5))
 					setSplitterPosition(60.0)
 				}
 			}
@@ -49,10 +54,12 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 	override fun beforeEnter(event: BeforeEnterEvent) {
 		projectId = event.routeParameters.get("projectId").get()
 		tasksToSuccessorsMap = taskService.getAll()
-			.filter { task -> task.projectId == projectId.toInt() }.associate { task -> task.id to task.successors }
+			.filter { task -> task.projectId == projectId.toInt() }
+			.sortedBy { it.id }
+			.associate { task -> task.id to task.successors }
 		
 		// initialise an empty graph structure
-		val graph = Graph<Int>()
+		graph = Graph<Int>(tasksToSuccessorsMap.size)
 		
 		// generate nodes
 		val nodes = tasksToSuccessorsMap.mapKeys { graph.createNode(it.key) }.keys
@@ -73,11 +80,15 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		println(graph.asAdjacencyList())
 	}
 	
+	override fun onAttach(attachEvent: AttachEvent?) {
+		getMatrix()
+	}
+	
 	private fun getGraph(): Div {
 		val div = Div()
 		val viz = Viz()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
-		viz.graph = graph
+		viz.graph = graphUI
 		viz.width = "100%"
 		viz.height = "80%"
 		viz.format = VizFormat.svg
@@ -85,7 +96,10 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		return div
 	}
 	
-	private fun getMatrix(size: Int): Div {
+	private fun getMatrix() {
+		val m = graph.asAdjacencyMatrix()
+		val size = m.size
+		
 		val div = Div()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
 		
@@ -93,19 +107,20 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		matrix.addClassName("matrix")
 		matrix.style.set("--matrix-size", size.toString())
 		
+		
 		for (i in 0 until size) {
 			val row = Div()
 			row.addClassName("row")
 			for (j in 0 until size) {
 				val cell = Div()
 				cell.addClassName("cell")
-				cell.text = "0"
+				cell.text = m[i][j].toString()
 				row.add(cell)
 			}
 			matrix.add(row)
 		}
 		div.add(matrix)
-		return div
+		layout.addToSecondary(div)
 	}
 	
 	override fun setErrorParameter(event: BeforeEnterEvent, p1: ErrorParameter<NotFoundException>): Int {
