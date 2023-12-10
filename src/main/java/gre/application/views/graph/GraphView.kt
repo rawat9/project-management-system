@@ -23,13 +23,13 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 	
 	private lateinit var projectId: String
 	
-	private lateinit var tasksToSuccessorsMap: Map<Int, Collection<Int>>;
+	private lateinit var tasksToSuccessorsMap: Map<Int, Collection<Int>>
 	
-	private val graphUI = "digraph { a -> b; a -> c; b -> d; c -> d }"
+	private lateinit var graphUI: String
 	
-	private lateinit var graph: Graph<Int>;
+	private lateinit var graph: Graph<Int>
 	
-	private lateinit var layout: SplitLayout;
+	private lateinit var layout: SplitLayout
 	
 	init {
 		ui {
@@ -44,7 +44,6 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 				}
 				layout = splitLayout {
 					height = "100vh"
-					addToPrimary(getGraph())
 					setSplitterPosition(60.0)
 				}
 			}
@@ -59,7 +58,7 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 			.associate { task -> task.id to task.successors }
 		
 		// initialise an empty graph structure
-		graph = Graph<Int>(tasksToSuccessorsMap.size)
+		graph = Graph(tasksToSuccessorsMap.size)
 		
 		// generate nodes
 		val nodes = tasksToSuccessorsMap.mapKeys { graph.createNode(it.key) }.keys
@@ -77,14 +76,15 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 			}
 		}
 		
-		println(graph.asAdjacencyList())
+		graphUI = "digraph { $graph }"
 	}
 	
 	override fun onAttach(attachEvent: AttachEvent?) {
+		getGraph()
 		getMatrix()
 	}
 	
-	private fun getGraph(): Div {
+	private fun getGraph() {
 		val div = Div()
 		val viz = Viz()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
@@ -93,7 +93,7 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		viz.height = "80%"
 		viz.format = VizFormat.svg
 		div.add(viz)
-		return div
+		layout.addToPrimary(div)
 	}
 	
 	private fun getMatrix() {
@@ -106,7 +106,6 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		val matrix = Div()
 		matrix.addClassName("matrix")
 		matrix.style.set("--matrix-size", size.toString())
-		
 		
 		for (i in 0 until size) {
 			val row = Div()

@@ -17,18 +17,41 @@ class Graph<T>(size: Int) {
 		adjacencyMap[source]?.add(edge)
 		
 		// edge between source and destination
-		matrix[source.index][destination.index] = 1
+		matrix[destination.index][source.index] = 1
 	}
 	
+	/**
+	 * Log the graph as an Adjacency Matrix representation
+	 */
 	fun asAdjacencyMatrix(): Array<IntArray> {
 		return matrix
 	}
 	
+	/**
+	 * Log the graph as an Adjacency List representation
+	 */
 	fun asAdjacencyList(): String {
 		return buildString {
-			adjacencyMap.forEach { (vertex, edges) ->
+			adjacencyMap.forEach { (node, edges) ->
 				val edgeString = edges.joinToString { it.destination.data.toString() }
-				append("${vertex.data} -> [$edgeString]\n")
+				append("${node.data} -> [$edgeString]\n")
+			}
+		}
+	}
+	
+	override fun toString(): String {
+		return buildString {
+			adjacencyMap.forEach { (node, edges) ->
+				if (edges.isNotEmpty()) {
+					val edge =
+						edges.joinToString(
+							"; ",
+							postfix = "; "
+						) { "\"Task ${it.source.data.toString()}\"" + " -> " + "\"Task ${it.destination.data.toString()}\"" }
+					append(edge)
+				} else {
+					append("\"Task ${node.data}\"; ")
+				}
 			}
 		}
 	}
