@@ -7,19 +7,20 @@ import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.splitlayout.SplitLayout
-import com.vaadin.flow.router.*
+import com.vaadin.flow.router.BeforeEnterEvent
+import com.vaadin.flow.router.BeforeEnterObserver
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.lumo.LumoUtility.*
 import de.f0rce.viz.Viz
 import de.f0rce.viz.VizFormat
 import gre.application.graph.Graph
 import gre.application.services.TaskService
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 
 @PageTitle("GraphView")
 @Route("graph/:projectId")
-class GraphView(@Autowired private val taskService: TaskService) : KComposite(), BeforeEnterObserver,
-	HasErrorParameter<NotFoundException> {
+class GraphView(@Autowired private val taskService: TaskService) : KComposite(), BeforeEnterObserver {
 	
 	private lateinit var projectId: String
 	
@@ -80,11 +81,11 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 	}
 	
 	override fun onAttach(attachEvent: AttachEvent?) {
-		getGraph()
-		getMatrix()
+		addGraphToView()
+		addMatrixToView()
 	}
 	
-	private fun getGraph() {
+	private fun addGraphToView() {
 		val div = Div()
 		val viz = Viz()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
@@ -96,7 +97,7 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		layout.addToPrimary(div)
 	}
 	
-	private fun getMatrix() {
+	private fun addMatrixToView() {
 		val m = graph.asAdjacencyMatrix()
 		val size = m.size
 		
@@ -120,10 +121,5 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		}
 		div.add(matrix)
 		layout.addToSecondary(div)
-	}
-	
-	override fun setErrorParameter(event: BeforeEnterEvent, p1: ErrorParameter<NotFoundException>): Int {
-		element.text = "Route not found"
-		return HttpServletResponse.SC_NOT_FOUND
 	}
 }
