@@ -82,7 +82,7 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 	
 	override fun onAttach(attachEvent: AttachEvent?) {
 		addGraphToView()
-		addMatrixToView()
+		addTableToView()
 	}
 	
 	private fun addGraphToView() {
@@ -96,30 +96,54 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		div.add(viz)
 		layout.addToPrimary(div)
 	}
-	
-	private fun addMatrixToView() {
+
+	private fun addTableToView() {
 		val m = graph.asAdjacencyMatrix()
 		val size = m.size
-		
+
 		val div = Div()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
-		
-		val matrix = Div()
-		matrix.addClassName("matrix")
-		matrix.style.set("--matrix-size", size.toString())
-		
+
+		val table = Div()
+		table.addClassName("table")
+		table.style.set("--matrix-size", size.toString())
+
+		val nodes = graph.getNodes()
+
+		val headerRow = Div()
+		headerRow.addClassName("tr")
+
+		// empty div to add gap
+		headerRow.add(Div())
+
+		nodes.map { node ->
+			val headerCell = Div()
+			headerCell.addClassName("th")
+			headerCell.text = node.data.toString()
+			headerRow.add(headerCell)
+		}
+		table.add(headerRow)
+
 		for (i in 0 until size) {
+			// table-row
 			val row = Div()
-			row.addClassName("row")
+			row.addClassName("tr")
+
+			// table-header
+			val th = Div()
+			th.addClassName("th")
+			th.text = nodes[i].data.toString()
+			row.add(th)
+
 			for (j in 0 until size) {
 				val cell = Div()
-				cell.addClassName("cell")
+				cell.addClassName("td")
 				cell.text = m[i][j].toString()
 				row.add(cell)
 			}
-			matrix.add(row)
+			table.add(row)
 		}
-		div.add(matrix)
+		div.add(table)
 		layout.addToSecondary(div)
 	}
 }

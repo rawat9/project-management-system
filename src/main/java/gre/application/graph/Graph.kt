@@ -19,6 +19,13 @@ class Graph<T>(size: Int) {
 		// edge between source and destination
 		matrix[destination.index][source.index] = 1
 	}
+
+	/**
+	 * Returns the list of nodes
+	 */
+	fun getNodes(): ArrayList<Node<T>> {
+		return nodes
+	}
 	
 	/**
 	 * Log the graph as an Adjacency Matrix representation
