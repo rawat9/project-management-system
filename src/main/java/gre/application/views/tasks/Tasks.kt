@@ -8,6 +8,7 @@ import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.Paragraph
 import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
@@ -123,7 +124,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						icon = VaadinIcon.CLUSTER.create()
 						addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST)
 						onLeftClick {
-							UI.getCurrent().navigate("/graph")
+							UI.getCurrent().navigate("/graph/${projectId}")
 						}
 					}
 					
@@ -131,6 +132,11 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						icon = VaadinIcon.ARCHIVE.create()
 						text = "Delete project"
 						addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR)
+						onLeftClick {
+							projectService.delete(projectId.toInt())
+							UI.getCurrent().navigate("/")
+							Notification.show("Deleted successfully")
+						}
 					}
 				}
 				
@@ -155,6 +161,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						}
 						add(todoLayout)
 					}
+					
 					div {
 						add(header("In Progress"))
 						inProgressLayout.addSortableComponentAddListener { e ->

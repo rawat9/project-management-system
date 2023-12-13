@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 object SchemaInitializer : ApplicationRunner {
-	override fun run(args: ApplicationArguments?) {
+	override fun run(args: ApplicationArguments) {
 		transaction {
 			SchemaUtils.createMissingTablesAndColumns(ProjectEntity, TaskEntity, SuccessorEntity)
 		}

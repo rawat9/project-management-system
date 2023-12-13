@@ -10,10 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 
 /**
  * The entry point of the Spring Boot application.
- *
- * Use the @PWA annotation make the application installable on phones, tablets
- * and some desktop browsers.
- *
+ * - Configure the database and connection pool
+ * - Initialise the schema and create DB tables
+ * - Set up the application UI theme
  */
 @SpringBootApplication
 @ImportAutoConfiguration(ExposedAutoConfiguration::class)

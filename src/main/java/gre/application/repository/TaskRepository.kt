@@ -58,7 +58,7 @@ open class TaskRepository : Repository<Task> {
 	}
 	
 	/**
-	 * Insert a new record/row and return the ID
+	 * Inserts a new record/row and return the ID
 	 */
 	override fun create(entity: Task): Int {
 		val id = TaskEntity.insertAndGetId {
@@ -72,8 +72,11 @@ open class TaskRepository : Repository<Task> {
 		return id.value
 	}
 	
+	/**
+	 * Returns a list of all successors for a given taskID
+	 */
 	private fun getAllSuccessors(taskId: Int): Set<Int> {
-		return SuccessorEntity.select { SuccessorEntity.taskId eq taskId }.map { it[SuccessorEntity.id] }.toSet()
+		return SuccessorEntity.select { SuccessorEntity.taskId eq taskId }.map { it[SuccessorEntity.id].value }.toSet()
 	}
 	
 	/**

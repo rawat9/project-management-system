@@ -60,6 +60,7 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 						Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE
 					)
 					
+					// fetch all the projects
 					projectService.getAll().forEach {
 						projectCard(
 							id = it.id,
@@ -78,6 +79,7 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 			binder.writeBean(project)
 			projectService.create(project)
 		}
+		// reload the page to reflect the updates
 		UI.getCurrent().page.reload()
 	}
 }
