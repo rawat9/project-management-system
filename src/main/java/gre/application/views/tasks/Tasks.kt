@@ -9,6 +9,7 @@ import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.Paragraph
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
@@ -135,7 +136,10 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						onLeftClick {
 							projectService.delete(projectId.toInt())
 							UI.getCurrent().navigate("/")
-							Notification.show("Deleted successfully")
+							val notification = Notification.show("Project deleted successfully")
+							notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
+							notification.position = Notification.Position.TOP_CENTER
+							notification.open()
 						}
 					}
 				}

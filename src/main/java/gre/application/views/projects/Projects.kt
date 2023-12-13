@@ -46,7 +46,7 @@ class Projects(@Autowired private val projectService: ProjectService) : KComposi
 						}
 					}
 					
-					val dialog = createFormProjectDialog(fun(binder: BeanValidationBinder<Project>) = onClick(binder))
+					val dialog = projectFormDialog(fun(binder: BeanValidationBinder<Project>) = onClick(binder))
 					
 					button {
 						text = "New Project"

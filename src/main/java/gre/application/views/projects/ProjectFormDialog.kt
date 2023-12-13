@@ -11,7 +11,7 @@ import gre.application.entities.project.Project
 
 typealias Handler<T> = (binder: BeanValidationBinder<T>) -> Unit
 
-class CreateFormProjectDialog(handler: Handler<Project>) : KComposite() {
+class ProjectFormDialog(handler: Handler<Project>) : KComposite() {
 	
 	private val binder: BeanValidationBinder<Project> = beanValidationBinder<Project>()
 	
@@ -23,12 +23,12 @@ class CreateFormProjectDialog(handler: Handler<Project>) : KComposite() {
 				textField {
 					label = "Project name"
 					isRequired = true
-					bind(binder).bind("name")
+					binder.forField(this).asRequired("Field is required").bind("name")
 				}
 				
 				textArea {
 					label = "Description"
-					bind(binder).bind("description")
+					binder.forField(this).bind("description")
 				}
 			}
 			
@@ -40,6 +40,12 @@ class CreateFormProjectDialog(handler: Handler<Project>) : KComposite() {
 				button {
 					text = "Create"
 					setPrimary()
+					isEnabled = false
+					
+					binder.addStatusChangeListener { event ->
+						val isValid = event.binder.isValid
+						this.isEnabled = isValid
+					}
 					
 					onLeftClick { _ ->
 						handler(binder)
@@ -65,10 +71,10 @@ class CreateFormProjectDialog(handler: Handler<Project>) : KComposite() {
 	}
 }
 
-fun HasComponents.createFormProjectDialog(
+fun HasComponents.projectFormDialog(
 	handler: (binder: BeanValidationBinder<Project>) -> Unit,
-	block: CreateFormProjectDialog.() -> Unit = {},
-): CreateFormProjectDialog = init(
-	CreateFormProjectDialog(handler),
+	block: ProjectFormDialog.() -> Unit = {},
+): ProjectFormDialog = init(
+	ProjectFormDialog(handler),
 	block,
 )
