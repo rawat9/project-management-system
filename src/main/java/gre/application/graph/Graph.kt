@@ -17,9 +17,10 @@ class Graph<T>(size: Int) {
 		adjacencyMap[source]?.add(edge)
 		
 		// edge between source and destination
-		matrix[destination.index][source.index] = 1
+		println(matrix.toString())
+		matrix[source.index][destination.index] = 1
 	}
-
+	
 	/**
 	 * Returns the list of nodes
 	 */
@@ -28,14 +29,14 @@ class Graph<T>(size: Int) {
 	}
 	
 	/**
-	 * Log the graph as an Adjacency Matrix representation
+	 * Utility function to log the graph as an Adjacency Matrix representation
 	 */
 	fun asAdjacencyMatrix(): Array<IntArray> {
 		return matrix
 	}
 	
 	/**
-	 * Log the graph as an Adjacency List representation
+	 * Utility function to log the graph as an Adjacency List representation
 	 */
 	fun asAdjacencyList(): String {
 		return buildString {

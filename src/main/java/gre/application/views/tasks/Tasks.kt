@@ -161,6 +161,7 @@ class Tasks(@Autowired private val projectService: ProjectService, @Autowired pr
 						}
 						add(todoLayout)
 					}
+					
 					div {
 						add(header("In Progress"))
 						inProgressLayout.addSortableComponentAddListener { e ->

@@ -77,14 +77,18 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 			}
 		}
 		
+		// render the graph
 		graphUI = "digraph { $graph }"
 	}
 	
-	override fun onAttach(attachEvent: AttachEvent?) {
+	override fun onAttach(attachEvent: AttachEvent) {
 		addGraphToView()
-		addTableToView()
+		addMatrixToView()
 	}
 	
+	/**
+	 * Adds the graph to the view
+	 */
 	private fun addGraphToView() {
 		val div = Div()
 		val viz = Viz()
@@ -96,54 +100,59 @@ class GraphView(@Autowired private val taskService: TaskService) : KComposite(),
 		div.add(viz)
 		layout.addToPrimary(div)
 	}
-
-	private fun addTableToView() {
+	
+	/**
+	 * Adds the matrix to the view
+	 */
+	private fun addMatrixToView() {
 		val m = graph.asAdjacencyMatrix()
 		val size = m.size
-
+		
 		val div = Div()
 		div.addClassNames(Display.FLEX, AlignItems.CENTER, JustifyContent.CENTER)
-
-		val table = Div()
-		table.addClassName("table")
-		table.style.set("--matrix-size", size.toString())
-
+		
+		val matrix = Div()
+		matrix.addClassName("table")
+		matrix.style.set("--matrix-size", size.toString())
+		
 		val nodes = graph.getNodes()
-
+		
 		val headerRow = Div()
 		headerRow.addClassName("tr")
-
-		// empty div to add gap
+		
+		// empty div to add gap at (0,0)
 		headerRow.add(Div())
-
+		
+		// table-header (column)
 		nodes.map { node ->
 			val headerCell = Div()
 			headerCell.addClassName("th")
-			headerCell.text = node.data.toString()
+			headerCell.text = "T${node.data}"
 			headerRow.add(headerCell)
 		}
-		table.add(headerRow)
-
+		matrix.add(headerRow)
+		
 		for (i in 0 until size) {
 			// table-row
 			val row = Div()
 			row.addClassName("tr")
-
-			// table-header
+			
+			// table-header (row)
 			val th = Div()
 			th.addClassName("th")
-			th.text = nodes[i].data.toString()
+			th.text = "T${nodes[i].data}"
 			row.add(th)
-
+			
+			// add cells to the matrix
 			for (j in 0 until size) {
 				val cell = Div()
 				cell.addClassName("td")
 				cell.text = m[i][j].toString()
 				row.add(cell)
 			}
-			table.add(row)
+			matrix.add(row)
 		}
-		div.add(table)
+		div.add(matrix)
 		layout.addToSecondary(div)
 	}
 }

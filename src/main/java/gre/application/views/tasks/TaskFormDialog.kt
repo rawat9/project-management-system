@@ -108,6 +108,7 @@ class TaskFormDialog(private val action: Action, val task: Task) : KComposite() 
 					
 					button {
 						text = "Delete"
+						isVisible = action.name == "EDIT"
 						addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR)
 						onLeftClick {
 							fireEvent(DeleteEvent(this@formLayout))

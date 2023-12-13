@@ -1,4 +1,4 @@
-# Project Management System
+# Project Management System - Web Application
 
 ## Tech Stack
 
@@ -8,9 +8,12 @@
 - Kotlin
 
 ## Running the Application
-There are two ways to run the application :  using `mvn spring-boot:run` or by running the `Application` class directly from your IDE.
+
+There are two ways to run the application :  using `mvn spring-boot:run` or by running the `Application` class directly
+from your IDE.
 
 #### Intellij IDEA
+
 - On the right side of the window, select Maven --> Plugins --> `spring-boot` --> `spring-boot:run` goal
 - Clicking on the green run button will start the application.
 - After the application has started, you can view your it at http://localhost:8080/ in your browser.
