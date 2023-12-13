@@ -17,7 +17,6 @@ class Graph<T>(size: Int) {
 		adjacencyMap[source]?.add(edge)
 		
 		// edge between source and destination
-		println(matrix.toString())
 		matrix[source.index][destination.index] = 1
 	}
 	
