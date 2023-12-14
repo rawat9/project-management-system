@@ -44,6 +44,8 @@ Vaadin web applications are full-stack and include both client-side and server-s
 
 ## Architecture Diagram
 
+- Design Pattern: **Repository Pattern**
+
 <img src="resources/architecture-diagram.png" alt="ERD" />
 
 ## ERD (Entity Relationship Diagram)
